@@ -2,7 +2,7 @@
 session_start();//à mettre avant html c'est pour demarrer une session
 
 if(!isset($_SESSION['id'])){
-    header("Location :connexion.php");
+    header("Location: connexion.php");
 }
 
 ?>
@@ -13,6 +13,7 @@ if(!isset($_SESSION['id'])){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <?php include_once "nav.php"; ?>

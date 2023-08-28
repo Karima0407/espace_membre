@@ -16,17 +16,17 @@ if (isset($_POST['envoi'])) {
     // echo "<pre>";
 
     // traitement de l'image
-    $img_name=$_FILES['image']['name'];
-    $img_tmp=$_FILES['image']['tmp_name'];
-    $destination = $_SERVER['DOCUMENT_ROOT'].'/espace_membre/img/'.$img_name;
-    move_uploaded_file($img_tmp,$destination);//une fonction qui enregistre l'image dans le dossier img
+    $img_name = $_FILES['image']['name'];
+    $img_tmp = $_FILES['image']['tmp_name'];
+    $destination = $_SERVER['DOCUMENT_ROOT'] . '/espace_membre/img/' . $img_name;
+    move_uploaded_file($img_tmp, $destination); //une fonction qui enregistre l'image dans le dossier img
 
     $db = dbConnexion(); //permet la connexion avec la base de données
     //preparation de la requete
     $request = $db->prepare("INSERT INTO membres(email,pseudo,mdp,profil_img) VALUES (?,?,?,?)");
     //execution  de la requete
     try {
-        $request->execute(array($email, $pseudo, $mdpCrypt,$img_name));
+        $request->execute(array($email, $pseudo, $mdpCrypt, $img_name));
     } catch (PDOException $e) {
         echo $e->getMessage(); //afficher l'erreur sql genere 
     }
@@ -34,14 +34,14 @@ if (isset($_POST['envoi'])) {
 }
 
 //pour la connexion
-if(isset($_POST['connexion'])){
-    $pseudo=$_POST['pseudo'];
-    $mdp=$_POST['password'];
+if (isset($_POST['connexion'])) {
+    $pseudo = $_POST['pseudo'];
+    $mdp = $_POST['password'];
 
     // etablir la connexion avec la bd
-    $connect=$connexionRequest=dbConnexion();
+    $connect = dbConnexion();
     //preparer la requete
-    $connexionRequest=$connect->prepare("SELECT * FROM membres WHERE pseudo = ?")
+    $connexionRequest = $connect->prepare("SELECT * FROM membres WHERE pseudo = ?");
     // ? car c'est une requete préparé
     //exécuter une requête
     $connexionRequest->execute(array($pseudo));
@@ -49,32 +49,68 @@ if(isset($_POST['connexion'])){
     $utilisateur = $connexionRequest->fetch(PDO::FETCH_ASSOC); // converti le résultat de la requête en tableau pour le manipuler facilement. On départ c'est objet
     // "fetch", "prepare", "exécute"...  sont des méthod de la class PDO qui nous les fournis
 
-    echo "<pre>";
-    print_r($utilisateur);
-    echo "<pre>";
+    // echo "<pre>";
+    // print_r($utilisateur);
+    // echo "<pre>";
+
+
+    //le tableau $utilisateur contient les infos de l'utilisateur comme suivant:
+    //$utilisateur=[
+    //'id_membre'=>1,
+    // "email"=>"WassilaDors@mail.com,
+    // "pseudo"=>WassilaDors",
+    // "mdp"=>$hljljmskifmol*ù*ùfù,
+    // "profil_img"=>"sommeil.enfant.dormir.jpeg";
+//   ]
 
     //si aucun utilisateur de correspond, il retourne un tableau vide
 
-    if(empty($utilisateur)){ // si le tableau $utilisateur est vide
-        echo "Utilisateur inconnu...";
-    }else{//sinon
-        //vérifie le mot de passe (est-ce cette chaine de caractère qui est à l'origine du cryptage)
-        if(password_verify($mdp,$utilisateur["password"])){
-            $_SESSION['id']=$utilisateur['id_membre'];
-            $_SESSION['pseudo']=$utilisateur['pseudo'];
-            $_SESSION['img']=$utilisateur['profil_img'];
+    if (empty($utilisateur)) { // si le tableau $utilisateur est vide
+        // echo "Utilisateur inconnu...";
+        $_SESSION['error'] = "Utilisateur inconnu...";
+        header("Location:connexion.php"); //rediriger 
 
-            header("Localisation :acceuil.php");
-        }else{
+    } else { //sinon
+        //vérifie le mot de passe (est-ce cette chaine de caractère qui est à l'origine du cryptage)
+        if (password_verify($mdp, $utilisateur["mdp"])) { // mdp c'est le nom de la colonne dans le table
+            //la variable$_SESSION est un tableau
+            // touts les superglobal en php sont des tableaux
+            // creer les variables de session:
+            $_SESSION['id'] = $utilisateur['id_membre'];
+            $_SESSION['pseudo'] = $utilisateur['pseudo'];
+            $_SESSION['img'] = $utilisateur['profil_img'];
+
+            header("Location: acceuil.php");
+        } else {
             echo "mot de passe incorrect";
-            header("refresh:2;http://localhost/php/WF3/espace_membre/connexion.php");
+            // header("refresh:2;http://localhost/php/WF3/espace_membre/connexion.php");
         }
     }
 
- 
 
- 
 
- 
 
+
+
+
+}
+
+// pour la publication
+if (isset($_POST['publier'])) {
+    $message = htmlspecialchars($_POST['message']);
+    $_image_name = $_FILES['img']['name'];
+    $tmp = $_FILES['img']['tmp_name'];
+    $destination = $_SERVER['DOCUMENT_ROOT'] . '/espace_membre/img/' . $img_name;
+    move_uploaded_file($tmp, $destination);
+
+    // connexion a la bd
+    $dbconnect = dbConnexion();
+    // preparation de la requete
+    $request = $dbconnect->prepare("INSERT INTO posts (membre_id,photo,text) VALUES (?,?,?)");
+    // execution de la requete
+    try {
+        $request->execute(array($_SESSION["id"], $img_name, $message));
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
 }
