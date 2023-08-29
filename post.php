@@ -10,9 +10,9 @@
 </head>
 <body>
     <?php include_once ("nav.php" ); ?>
-    <form action="traitement.php" method="post" enctype="multipart/form-data">
-     <input type="file" name="img">
-     <textarea name="message" id="" cols="30" rows="10" placeholder="votre message"></textarea>
+    <form class="post_fichier" action="traitement.php" method="post" enctype="multipart/form-data">
+     <input  type="file" name="img">
+     <div><textarea name="message" id="" cols="30" rows="10" placeholder="votre message"></textarea></div>
      <button name="publier">publier</button>
     </form>
 </body>

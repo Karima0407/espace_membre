@@ -23,7 +23,7 @@
     text-align: center; 
 
 }
-input{
+.image input{
     margin: 15px;
     width: 40%;
     height: 80px;
@@ -83,4 +83,42 @@ input{
 body{
     padding: 0;
     margin: 0;
+}
+.post_fichier input{
+    width: 250px;
+    background-color: pink;
+    margin-left: 0;
+    border-radius: 15px;
+   height: 40px;
+   margin-bottom: 20px;
+
+
+}
+.post_fichier{
+    margin-left: 30px;
+}
+.post_fichier textarea{
+   margin-left: 0;
+}
+.post{
+  
+ 
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+   
+}
+.postimg{
+    width: 500px;
+    height:400px;
+    padding: 30px;
+}
+.postimg img{
+    width: 100%;
+    height: 100%;
+    
+}
+i{
+    color: red;
 }

@@ -13,7 +13,7 @@
 
 <body>
     <div class="fond">
-        <form action="traitement.php" method="post">
+        <form class="image" action="traitement.php" method="post">
             <?php if (isset($_SESSION['error'])) { ?>
                 <p>
                     <?= $_SESSION['error']; ?>

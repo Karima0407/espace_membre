@@ -76,9 +76,13 @@ if (isset($_POST['connexion'])) {
             //la variable$_SESSION est un tableau
             // touts les superglobal en php sont des tableaux
             // creer les variables de session:
-            $_SESSION['id'] = $utilisateur['id_membre'];
+            $_SESSION["id"] = $utilisateur['id_membre'];
             $_SESSION['pseudo'] = $utilisateur['pseudo'];
             $_SESSION['img'] = $utilisateur['profil_img'];
+
+            //cration du cookie qui va stocker l'identifiant de l'utilisateurpour permettre une 
+            // meilleure experience c a d on va la connecter automatiquement apres verification du cookie
+            setcookie("id_user",$utilisateur['id_membre'],time()+3600,'/','localhost',false,true);
 
             header("Location: acceuil.php");
         } else {
@@ -98,9 +102,9 @@ if (isset($_POST['connexion'])) {
 // pour la publication
 if (isset($_POST['publier'])) {
     $message = htmlspecialchars($_POST['message']);
-    $_image_name = $_FILES['img']['name'];
+    $img_name = $_FILES['img']['name'];
     $tmp = $_FILES['img']['tmp_name'];
-    $destination = $_SERVER['DOCUMENT_ROOT'] . '/espace_membre/img/' . $img_name;
+    $destination = $_SERVER['DOCUMENT_ROOT'].'/espace_membre/img/'.$img_name;
     move_uploaded_file($tmp, $destination);
 
     // connexion a la bd
@@ -110,7 +114,25 @@ if (isset($_POST['publier'])) {
     // execution de la requete
     try {
         $request->execute(array($_SESSION["id"], $img_name, $message));
+        header("Location: acceuil.php");
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
+}
+
+if (isset($_GET['idpost'])){
+    $dbconnect=dbConnexion();//connexion a la base de données
+    // preparer la requete
+    $request=$dbconnect->prepare("SELECT likes FROM posts WHERE id_post=?");
+    // executer la requete
+    $request->execute(array ($_GET['idpost']));
+    // on recupere le resultat
+    $likes=$request->fetch();
+    // echo $likes['likes'];// cest pour quand on clique sur le bouton like affiche le nombre de likes
+    //requete pour modifier le nombre like
+    $request1=$dbconnect->prepare ("UPDATE posts SET likes=? WHERE id_post=?");
+    // executer la requete
+    $request1->execute(array($likes['likes']+1, $_GET['idpost']));
+    header("Location:acceuil.php");
+
 }
